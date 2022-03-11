@@ -26,6 +26,10 @@ def create_b64string(path: Path):
         return encodedSVG.decode()
 
 def create_jsonstring(b64string: str, title: str):
+    """Create the json string expected by draw.io / diagrams.net with a given
+    b64 representation of a file and a title, width and height are fixed to 64px
+    (can be dynamically changed in the diagram)"""
+
     return f"""{{"data": "data:image/svg+xml;base64,{b64string}", "w": 64, "h": 64, "title": "{title}"}}"""
 
 # clean up previous instances of library files
@@ -50,6 +54,7 @@ for cwd, dirs, files in walk(path.join(signdir, 'svg'), topdown=True):
     outfilename = ''
     title = ''
     for file in files:
+        # handle subdirs to make sure we have 1 'Schadenskonten' XML file
         if any(x in cwd for x in special_subdirs):
             outfilename = cwd.lower().split('/')[-2] + '.xml'
             title = cwd.lower().split('/')[-1] + '_' + file.split('.')[0]
@@ -62,7 +67,8 @@ for cwd, dirs, files in walk(path.join(signdir, 'svg'), topdown=True):
 
     xmlstring = f"""<mxlibrary>[{','.join(jsonstringlist)}]</mxlibrary>\n"""
 
-    if outfilename:
+    # ensure we only write stuff if we're not in the root directory containing no files
+    if files:
         write_xmlstring_to_file(xmlstring, outfilename)
 
 # clean up previously used sign files
