@@ -11,7 +11,7 @@ from urllib.request import urlopen
 from zipfile import ZipFile
 
 targetdir  = Path('../libfiles')
-signdir = Path('taktischezeichen/svg')
+signdir = Path('taktischezeichen')
 
 def write_xmlstring_to_file(xmlstring: str, outfilename: str):
     """Write a given XML string to a file in the target directory"""
@@ -45,7 +45,7 @@ with urlopen(zipurl) as zipresp:
 
 special_subdirs = ['gelb', 'rot', 'weiß']
 
-for cwd, dirs, files in walk(signdir):
+for cwd, dirs, files in walk(path.join(signdir, 'svg'), topdown=True):
     jsonstringlist = []
     outfilename = ''
     title = ''
